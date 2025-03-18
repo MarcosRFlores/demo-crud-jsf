@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Publicaciones</title>
+    <style>
+        .boton-accion {
+            margin-right: 10px; /* Espacio entre los botones */
+        }
+    </style>
+</h:head>
+<h:body>
+    <h:form id="formTabla">
+        <p:panel header="Lista de Publicaciones">
+            <p:dataTable id="tablaPublicaciones" value="#{publicacionController.publicaciones}" var="publicacion">
+                <p:column headerText="ID">
+                    <h:outputText value="#{publicacion.id}" />
+                </p:column>
+                <p:column headerText="Título">
+                    <h:outputText value="#{publicacion.titulo}" />
+                </p:column>
+                <p:column headerText="Contenido">
+                    <h:outputText value="#{publicacion.contenido}" />
+                </p:column>
+                <p:column headerText="Usuario">
+                    <h:outputText value="#{publicacion.usuario.nombre}" />
+                </p:column>
+                <p:column headerText="Acciones">
+                    <!-- Botón para eliminar -->
+                    <p:commandButton value="Eliminar" action="#{publicacionController.eliminarPublicacion(publicacion)}" update=":formTabla:tablaPublicaciones" styleClass="boton-accion" />
+
+                    <!-- Botón para editar -->
+                    <p:commandButton value="Editar" onclick="PF('dialogoEditarPublicacion').show()" update=":formEditarPublicacion" styleClass="boton-accion">
+                        <f:setPropertyActionListener value="#{publicacion}" target="#{publicacionController.publicacionSeleccionada}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </h:form>
+
+    <h:form id="formCreacion">
+        <p:panel header="Nueva Publicación">
+            <p:outputLabel for="titulo" value="Título:" />
+            <p:inputText id="titulo" value="#{publicacionController.publicacion.titulo}" placeholder="Título" required="true" />
+
+            <p:outputLabel for="contenido" value="Contenido:" />
+            <p:inputTextarea id="contenido" value="#{publicacionController.publicacion.contenido}" placeholder="Contenido" required="true" />
+
+            <p:outputLabel for="usuario" value="Usuario:" />
+            <p:selectOneMenu id="usuario" value="#{publicacionController.usuarioSeleccionado}" required="true">
+                <f:selectItems value="#{usuarioController.usuarios}" var="usuario" itemLabel="#{usuario.nombre}" itemValue="#{usuario.id}" />
+            </p:selectOneMenu>
+
+            <p:commandButton value="Guardar" action="#{publicacionController.guardarPublicacion}" update=":formTabla:tablaPublicaciones :formCreacion" />
+        </p:panel>
+    </h:form>
+
+
+    <p:dialog widgetVar="dialogoEditarPublicacion" header="Editar Publicación" modal="true" resizable="false">
+        <h:form id="formEditarPublicacion">
+            <p:outputLabel for="tituloEditado" value="Título:" />
+            <p:inputText id="tituloEditado" value="#{publicacionController.publicacionSeleccionada.titulo}" required="true" />
+
+            <p:outputLabel for="contenidoEditado" value="Contenido:" />
+            <p:inputTextarea id="contenidoEditado" value="#{publicacionController.publicacionSeleccionada.contenido}" required="true" />
+
+            <p:commandButton value="Guardar Cambios" action="#{publicacionController.actualizarPublicacion}"
+                             oncomplete="PF('dialogoEditarPublicacion').hide()" update=":formTabla:tablaPublicaciones" />
+            <p:commandButton value="Cancelar" onclick="PF('dialogoEditarPublicacion').hide()" immediate="true" />
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>

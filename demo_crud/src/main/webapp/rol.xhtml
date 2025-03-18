@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+    <title>Roles</title>
+</h:head>
+<h:body>
+    <h:form id="formPrincipal">
+        <p:panel header="Roles">
+            <p:dataTable value="#{rolController.roles}" var="rol">
+                <p:column headerText="ID">
+                    <h:outputText value="#{rol.id}" />
+                </p:column>
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{rol.nombre}" />
+                </p:column>
+                <p:column headerText="Acciones">
+                    <!-- Botón para abrir el diálogo de edición -->
+                    <p:commandButton value="Editar" onclick="PF('dialogoEditar').show()" update=":formEditar" style="margin-right: 15px;">
+                        <f:setPropertyActionListener value="#{rol}" target="#{rolController.rolSeleccionado}" />
+                    </p:commandButton>
+
+                    <p:commandButton value="Eliminar" action="#{rolController.eliminarRol(rol)}" update="@form"/>
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="Nuevo Rol">
+            <p:inputText value="#{rolController.rol.nombre}" placeholder="Nombre" />
+            <p:commandButton value="Guardar" action="#{rolController.guardarRol}" update="@form"/>
+        </p:panel>
+    </h:form>
+
+    <!-- Diálogo para editar el rol -->
+    <p:dialog widgetVar="dialogoEditar" header="Editar Rol" modal="true" resizable="false">
+        <h:form id="formEditar">
+            <p:outputLabel for="nombreEditado" value="Nombre:" />
+            <p:inputText id="nombreEditado" value="#{rolController.rolSeleccionado.nombre}" required="true" />
+
+            <p:commandButton value="Guardar Cambios" action="#{rolController.actualizarRol}"
+                             oncomplete="PF('dialogoEditar').hide()" update=":formPrincipal" style="margin-left: 10px"/>
+            <p:commandButton value="Cancelar" onclick="PF('dialogoEditar').hide()" immediate="true" style="margin-left: 10px" />
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>
+

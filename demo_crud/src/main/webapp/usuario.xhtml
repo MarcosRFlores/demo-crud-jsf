@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Usuarios</title>
+    <style>
+        .boton-accion {
+            margin-right: 10px; /* Espacio entre los botones */
+        }
+    </style>
+</h:head>
+<h:body>
+    <h:form id="formPrincipal">
+        <p:panel header="Lista de Usuarios">
+            <p:dataTable value="#{usuarioController.usuarios}" var="usuario">
+                <p:column headerText="ID">
+                    <h:outputText value="#{usuario.id}" />
+                </p:column>
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{usuario.nombre}" />
+                </p:column>
+                <p:column headerText="Rol">
+                    <h:outputText value="#{usuario.rol.nombre}" />
+                </p:column>
+                <p:column headerText="Acciones">
+                    <!-- Botón para abrir el diálogo de edición -->
+                    <p:commandButton value="Editar" onclick="PF('dialogoEditarUsuario').show()" update=":formEditarUsuario" styleClass="boton-accion">
+                        <f:setPropertyActionListener value="#{usuario}" target="#{usuarioController.usuarioSeleccionado}" />
+                    </p:commandButton>
+                    <p:commandButton value="Eliminar" action="#{usuarioController.eliminarUsuario(usuario)}" update="@form" styleClass="boton-accion" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+
+        <p:panel header="Nuevo Usuario">
+            <p:outputLabel for="nombre" value="Nombre:" />
+            <p:inputText id="nombre" value="#{usuarioController.usuario.nombre}" placeholder="Nombre" />
+
+            <p:outputLabel for="contrasena" value="Contraseña:" />
+            <p:inputText id="contrasena" value="#{usuarioController.usuario.contrasena}" placeholder="Contraseña" />
+
+            <p:outputLabel for="rol" value="Rol:" />
+            <p:selectOneMenu id="rol" value="#{usuarioController.rolSeleccionado}" required="true">
+                <f:selectItems value="#{rolController.roles}" var="rol" itemLabel="#{rol.nombre}" itemValue="#{rol.id}" />
+            </p:selectOneMenu>
+
+            <p:commandButton value="Guardar" action="#{usuarioController.guardarUsuario}" update="@form" />
+        </p:panel>
+    </h:form>
+
+    <!-- Diálogo para editar el usuario -->
+    <p:dialog widgetVar="dialogoEditarUsuario" header="Editar Usuario" modal="true" resizable="false">
+        <h:form id="formEditarUsuario">
+            <p:outputLabel for="nombreEditado" value="Nombre:" />
+            <p:inputText id="nombreEditado" value="#{usuarioController.usuarioSeleccionado.nombre}" required="true" />
+
+            <p:outputLabel for="contrasenaEditada" value="Contraseña:" />
+            <p:inputText id="contrasenaEditada" value="#{usuarioController.usuarioSeleccionado.contrasena}" required="true" />
+
+            <p:outputLabel for="rolEditado" value="Rol:" />
+            <p:selectOneMenu id="rolEditado" value="#{usuarioController.rolSeleccionado}" required="true">
+                <f:selectItems value="#{rolController.roles}" var="rol" itemLabel="#{rol.nombre}" itemValue="#{rol.id}" />
+            </p:selectOneMenu>
+
+            <p:commandButton value="Guardar Cambios" action="#{usuarioController.actualizarUsuario}"
+                             oncomplete="PF('dialogoEditarUsuario').hide()" update=":formPrincipal" />
+            <p:commandButton value="Cancelar" onclick="PF('dialogoEditarUsuario').hide()" immediate="true" />
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>
